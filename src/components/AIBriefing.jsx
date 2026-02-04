@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { Sparkles } from 'lucide-react'; // Sparkles 아이콘 필수!
+
+const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
+const GEMINI_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const AIBriefing = ({ schoolInfo, routine, geminiKey, neisKey }) => {
     const [briefing, setBriefing] = useState("");

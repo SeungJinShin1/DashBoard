@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { Search } from 'lucide-react'; // 여기 Search가 꼭 있어야 합니다!
+
+const NEIS_BASE_URL = "https://open.neis.go.kr/hub";
 
 const SchoolSearch = ({ setSchoolInfo, neisKey }) => {
     const [query, setQuery] = useState("");

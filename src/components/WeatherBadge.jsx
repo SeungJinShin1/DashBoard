@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CloudSun } from 'lucide-react';
 
 const WeatherBadge = ({ weatherApiKey }) => {
     const [weather, setWeather] = useState(null);

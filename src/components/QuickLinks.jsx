@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link as LinkIcon, Settings, ExternalLink, BookOpen } from 'lucide-react';
 
 const QuickLinks = () => {
     const [portalUrl, setPortalUrl] = useState("");

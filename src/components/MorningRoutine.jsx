@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Coffee } from 'lucide-react'; // Coffee 아이콘 필수!
 
 const MorningRoutine = ({ routine, setRoutine }) => {
     const [isEditing, setIsEditing] = useState(false);

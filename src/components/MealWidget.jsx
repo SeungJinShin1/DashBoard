@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Utensils } from 'lucide-react'; // Utensils 아이콘 필수!
+
+const NEIS_BASE_URL = "https://open.neis.go.kr/hub";
 
 const MealWidget = ({ schoolInfo, neisKey }) => {
     const [meal, setMeal] = useState("로딩 중...");
