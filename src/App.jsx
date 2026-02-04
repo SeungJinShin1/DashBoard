@@ -6,6 +6,7 @@ import Header from './components/Header';
 import SchoolSearch from './components/SchoolSearch';
 import MealWidget from './components/MealWidget';
 import MorningRoutine from './components/MorningRoutine';
+import Timetable from './components/Timetable';
 import QuickLinks from './components/QuickLinks';
 import AIBriefing from './components/AIBriefing';
 import QuizWidget from './components/QuizWidget';
@@ -14,17 +15,21 @@ const App = () => {
   const [schoolInfo, setSchoolInfo] = useState(null);
   const [routine, setRoutine] = useState("");
   
-  // 1. 환경 변수 설정 (.env 파일 사용)
-  // import.meta.env가 없을 경우를 대비해 안전하게 접근합니다.
-  const env = import.meta.env || {};
-  const GEMINI_API_KEY = env.VITE_GEMINI_API_KEY || "";
-  const NEIS_API_KEY = env.VITE_NEIS_API_KEY || "";
-  const WEATHER_API_KEY = env.VITE_WEATHER_API_KEY || "";
+  // 1. 환경 변수 설정
+  // import.meta.env 접근 시 발생할 수 있는 호환성 경고를 방지하기 위해 직접 접근합니다.
+  // 로컬 Vite 환경에서는 정상 작동합니다.
+  const GEMINI_API_KEY = (import.meta && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) || "";
+  const NEIS_API_KEY = (import.meta && import.meta.env && import.meta.env.VITE_NEIS_API_KEY) || "";
+  const WEATHER_API_KEY = (import.meta && import.meta.env && import.meta.env.VITE_WEATHER_API_KEY) || "";
 
-  // 2. 초기 데이터 로드 (Local Storage)
+  // 2. 초기 데이터 로드
   useEffect(() => {
-    const savedSchool = localStorage.getItem("mySchool");
-    if (savedSchool) setSchoolInfo(JSON.parse(savedSchool));
+    try {
+      const savedSchool = localStorage.getItem("mySchool");
+      if (savedSchool) setSchoolInfo(JSON.parse(savedSchool));
+    } catch (e) {
+      console.error("학교 정보 로드 실패", e);
+    }
 
     const savedRoutine = localStorage.getItem("morningRoutine");
     if (savedRoutine) setRoutine(savedRoutine);
@@ -34,7 +39,7 @@ const App = () => {
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
       <div className="max-w-7xl mx-auto">
         
-        {/* 헤더 (날씨-제목-시간) */}
+        {/* 헤더 */}
         <Header weatherApiKey={WEATHER_API_KEY} />
 
         {/* 메인 그리드 레이아웃 */}
@@ -47,7 +52,6 @@ const App = () => {
             ) : (
               <div className="h-full relative group">
                  <MealWidget schoolInfo={schoolInfo} neisKey={NEIS_API_KEY} />
-                 {/* 학교 설정 초기화 버튼 */}
                  <button 
                    onClick={() => {
                      if(window.confirm('학교 설정을 초기화하시겠습니까?')) {
@@ -63,17 +67,22 @@ const App = () => {
             )}
           </div>
 
-          {/* 2열: 아침 루틴 */}
+          {/* 2열: 오늘의 시간표 */}
+          <div className="h-80">
+            <Timetable schoolInfo={schoolInfo} neisKey={NEIS_API_KEY} />
+          </div>
+
+          {/* 3열: 아침 루틴 */}
           <div className="h-80">
             <MorningRoutine routine={routine} setRoutine={setRoutine} />
           </div>
 
-          {/* 3열: 퀵 링크 */}
+          {/* 4열: 퀵 링크 */}
           <div className="h-80">
             <QuickLinks />
           </div>
 
-          {/* 4열: AI 아침 브리핑 (2칸 차지) */}
+          {/* 5열: AI 아침 브리핑 (2칸 차지) */}
           <AIBriefing 
             schoolInfo={schoolInfo} 
             routine={routine} 
@@ -81,7 +90,7 @@ const App = () => {
             neisKey={NEIS_API_KEY}
           />
           
-          {/* 5열: AI 틈새 퀴즈 */}
+          {/* 6열: AI 틈새 퀴즈 */}
           <div className="h-auto min-h-[300px] flex flex-col gap-6 lg:col-span-1 md:col-span-2">
             <div className="flex-1">
                <QuizWidget geminiKey={GEMINI_API_KEY} />
