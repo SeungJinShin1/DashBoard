@@ -10,17 +10,25 @@ import Timetable from './components/Timetable';
 import QuickLinks from './components/QuickLinks';
 import AIBriefing from './components/AIBriefing';
 import QuizWidget from './components/QuizWidget';
+import MusicWidget from './components/MusicWidget';
+import QuoteWidget from './components/QuoteWidget';
 
 const App = () => {
   const [schoolInfo, setSchoolInfo] = useState(null);
   const [routine, setRoutine] = useState("");
   
-  // 1. 환경 변수 설정
-  // import.meta.env 접근 시 발생할 수 있는 호환성 경고를 방지하기 위해 직접 접근합니다.
-  // 로컬 Vite 환경에서는 정상 작동합니다.
-  const GEMINI_API_KEY = (import.meta && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) || "";
-  const NEIS_API_KEY = (import.meta && import.meta.env && import.meta.env.VITE_NEIS_API_KEY) || "";
-  const WEATHER_API_KEY = (import.meta && import.meta.env && import.meta.env.VITE_WEATHER_API_KEY) || "";
+  // 1. 환경 변수 설정 (안전하게 가져오기)
+  const getEnv = (key) => {
+    try {
+      return import.meta.env[key] || "";
+    } catch (e) {
+      return "";
+    }
+  };
+
+  const GEMINI_API_KEY = getEnv("VITE_GEMINI_API_KEY");
+  const NEIS_API_KEY = getEnv("VITE_NEIS_API_KEY");
+  const WEATHER_API_KEY = getEnv("VITE_WEATHER_API_KEY");
 
   // 2. 초기 데이터 로드
   useEffect(() => {
@@ -90,11 +98,19 @@ const App = () => {
             neisKey={NEIS_API_KEY}
           />
           
-          {/* 6열: AI 틈새 퀴즈 */}
-          <div className="h-auto min-h-[300px] flex flex-col gap-6 lg:col-span-1 md:col-span-2">
-            <div className="flex-1">
+          {/* 6열: 하단 3개 위젯 나란히 배치 */}
+          <div className="h-auto min-h-[300px] flex flex-col gap-6 lg:col-span-1 md:col-span-2 lg:h-80">
+            <div className="flex-1 h-full">
                <QuizWidget geminiKey={GEMINI_API_KEY} />
             </div>
+          </div>
+
+          <div className="h-80 lg:col-span-1 md:col-span-2">
+             <MusicWidget />
+          </div>
+
+          <div className="h-80 lg:col-span-1 md:col-span-2">
+             <QuoteWidget geminiKey={GEMINI_API_KEY} />
           </div>
 
         </div>
