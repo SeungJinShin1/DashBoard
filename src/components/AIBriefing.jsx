@@ -53,3 +53,5 @@ const AIBriefing = ({ schoolInfo, routine, geminiKey, neisKey }) => {
       </div>
     );
   };
+
+  export default AIBriefing;

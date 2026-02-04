@@ -83,3 +83,4 @@ const WeatherBadge = ({ weatherApiKey }) => {
     );
   };
   
+  export default WeatherBadge;

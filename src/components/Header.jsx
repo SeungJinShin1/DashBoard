@@ -40,3 +40,5 @@ const Header = ({ weatherApiKey }) => {
       </header>
     );
   };
+
+  export default Header;

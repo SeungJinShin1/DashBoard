@@ -40,3 +40,5 @@ const MorningRoutine = ({ routine, setRoutine }) => {
       </div>
     );
   };
+
+  export default MorningRoutine;

@@ -71,3 +71,5 @@ const QuickLinks = () => {
       </div>
     );
   };
+
+  export default QuickLinks;

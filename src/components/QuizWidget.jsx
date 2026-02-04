@@ -44,3 +44,5 @@ const QuizWidget = ({ geminiKey }) => {
       </div>
     );
   };
+
+  export default QuizWidget;

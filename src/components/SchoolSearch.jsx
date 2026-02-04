@@ -66,3 +66,5 @@ const SchoolSearch = ({ setSchoolInfo, neisKey }) => {
       </div>
     );
   };
+
+  export default SchoolSearch;

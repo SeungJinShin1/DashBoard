@@ -23,3 +23,5 @@ const MealWidget = ({ schoolInfo, neisKey }) => {
       </div>
     );
   };
+
+  export default MealWidget;
