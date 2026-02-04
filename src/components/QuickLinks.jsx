@@ -13,22 +13,18 @@ const QuickLinks = () => {
 
   // 초기 데이터 로드
   useEffect(() => {
-    // 업무포털 주소 불러오기
     const savedPortal = localStorage.getItem("portalUrl");
     if (savedPortal) setPortalUrl(savedPortal);
 
-    // 커스텀 링크 불러오기
     const savedLinks = localStorage.getItem("customLinks");
     if (savedLinks) {
       setLinks(JSON.parse(savedLinks));
     } else {
-      // 초기값이 없을 때 기본 추천 링크 제공
       const defaults = [
         { id: 1, name: "아이스크림", url: "https://www.i-scream.co.kr" },
         { id: 2, name: "인디스쿨", url: "https://www.indischool.com" }
       ];
       setLinks(defaults);
-      // 저장하지는 않음 (사용자가 지우고 싶을 수 있으므로 state에만 반영하고, 수정 발생 시 저장)
     }
   }, []);
 
@@ -49,8 +45,6 @@ const QuickLinks = () => {
   };
 
   // --- 커스텀 링크 CRUD 함수 ---
-  
-  // 링크 추가 (Create)
   const addLink = () => {
     if (!newLink.name || !newLink.url) return alert("이름과 주소를 모두 입력해주세요.");
     
@@ -69,9 +63,8 @@ const QuickLinks = () => {
     setIsAdding(false);
   };
 
-  // 링크 삭제 (Delete)
   const deleteLink = (e, id) => {
-    e.preventDefault(); // 링크 이동 방지
+    e.preventDefault();
     e.stopPropagation();
     
     if (window.confirm("이 바로가기를 삭제하시겠습니까?")) {
@@ -82,14 +75,16 @@ const QuickLinks = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg text-white h-full flex flex-col">
-      {/* 타이틀 */}
+    // relative 클래스 추가: 내부 팝업 위치 기준점
+    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg text-white h-full flex flex-col relative overflow-hidden">
+      
+      {/* 타이틀 영역 */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold flex items-center gap-2">
           <LinkIcon size={20} /> 빠른 바로가기
         </h2>
-        {/* 링크 추가 버튼 (최대 4개 제한) */}
-        {links.length < 4 && !isAdding && (
+        {/* 링크 추가 버튼 (최대 4개) */}
+        {links.length < 4 && (
           <button 
             onClick={() => setIsAdding(true)}
             className="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded flex items-center gap-1 transition"
@@ -99,7 +94,7 @@ const QuickLinks = () => {
         )}
       </div>
       
-      {/* 1. 업무포털 메인 버튼 (가장 큰 버튼) */}
+      {/* 1. 업무포털 메인 버튼 */}
       <div className="relative group mb-4">
         <a 
           href={portalUrl || "#"} 
@@ -116,47 +111,28 @@ const QuickLinks = () => {
           {portalUrl ? "업무포털 접속하기" : "+ 업무포털 주소 설정"}
         </a>
         
-        {/* 설정 버튼 */}
         <button 
-          onClick={() => setIsEditingPortal(!isEditingPortal)} 
+          onClick={() => setIsEditingPortal(true)} 
           className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-indigo-600 bg-transparent hover:bg-white rounded-full transition opacity-0 group-hover:opacity-100"
           title="주소 수정"
         >
           <Settings size={14}/>
         </button>
-
-        {/* 업무포털 주소 입력창 */}
-        {isEditingPortal && (
-          <div className="absolute top-full left-0 w-full mt-2 bg-white p-3 rounded-lg shadow-xl z-10 text-slate-800 animate-in fade-in slide-in-from-top-2 duration-200">
-            <p className="text-xs text-slate-500 mb-1">업무포털 주소 (예: neis.go.kr)</p>
-            <div className="flex gap-2">
-              <input 
-                type="text" 
-                value={portalUrl} 
-                onChange={e => setPortalUrl(e.target.value)} 
-                className="flex-1 p-2 text-sm border rounded outline-none focus:ring-2 focus:ring-indigo-500" 
-                placeholder="https://..." 
-              />
-              <button onClick={savePortal} className="bg-indigo-600 text-white px-3 rounded text-sm hover:bg-indigo-700">저장</button>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* 2. 커스텀 링크 그리드 (최대 4개) */}
-      <div className="grid grid-cols-2 gap-3 flex-1 content-start">
+      {/* 2. 커스텀 링크 그리드 */}
+      <div className="grid grid-cols-2 gap-3 flex-1 content-start overflow-y-auto pr-1 custom-scrollbar">
         {links.map(link => (
           <a 
             key={link.id}
             href={link.url} 
             target="_blank" 
             rel="noreferrer" 
-            className="relative flex flex-col items-center justify-center p-3 bg-white/10 hover:bg-white/20 rounded-xl transition group backdrop-blur-sm border border-white/5 hover:border-white/20"
+            className="relative flex flex-col items-center justify-center p-3 bg-white/10 hover:bg-white/20 rounded-xl transition group backdrop-blur-sm border border-white/5 hover:border-white/20 min-h-[80px]"
           >
             <ExternalLink size={16} className="mb-1 opacity-70" />
             <span className="text-sm font-medium truncate w-full text-center">{link.name}</span>
             
-            {/* 삭제 버튼 (호버 시 표시) */}
             <button 
               onClick={(e) => deleteLink(e, link.id)}
               className="absolute top-1 right-1 p-1 text-white/40 hover:text-red-300 hover:bg-white/10 rounded-full opacity-0 group-hover:opacity-100 transition"
@@ -166,34 +142,67 @@ const QuickLinks = () => {
             </button>
           </a>
         ))}
+      </div>
 
-        {/* 링크 추가 폼 (isAdding 상태일 때만 보임) */}
-        {isAdding && (
-          <div className="col-span-2 bg-white/95 p-3 rounded-xl text-slate-800 animate-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-bold text-indigo-600">새 바로가기 추가</span>
-              <button onClick={() => setIsAdding(false)} className="text-slate-400 hover:text-slate-600"><X size={14}/></button>
+      {/* ---------------------------------------------------------- */}
+      {/* 팝업 모달창들 (화면 중앙에 띄움) */}
+      {/* ---------------------------------------------------------- */}
+
+      {/* A. 업무포털 설정 모달 */}
+      {isEditingPortal && (
+        <div className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 rounded-2xl animate-in fade-in duration-200">
+          <div className="bg-white p-4 rounded-xl w-full shadow-2xl text-slate-800">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-sm font-bold text-indigo-600">업무포털 주소 설정</span>
+              <button onClick={() => setIsEditingPortal(false)} className="text-slate-400 hover:text-slate-600"><X size={16}/></button>
             </div>
             <input 
               type="text" 
-              placeholder="이름 (예: 구글)" 
-              value={newLink.name}
-              onChange={e => setNewLink({...newLink, name: e.target.value})}
-              className="w-full p-1.5 text-xs border rounded mb-1.5 outline-none focus:border-indigo-500"
+              value={portalUrl} 
+              onChange={e => setPortalUrl(e.target.value)} 
+              className="w-full p-2 text-sm border rounded mb-3 outline-none focus:border-indigo-500 bg-slate-50" 
+              placeholder="예: neis.go.kr" 
+              autoFocus
             />
-            <input 
-              type="text" 
-              placeholder="URL (예: google.com)" 
-              value={newLink.url}
-              onChange={e => setNewLink({...newLink, url: e.target.value})}
-              className="w-full p-1.5 text-xs border rounded mb-2 outline-none focus:border-indigo-500"
-            />
-            <button onClick={addLink} className="w-full py-1.5 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 font-bold">
+            <button onClick={savePortal} className="w-full py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 font-bold shadow-md">
+              저장하기
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* B. 새 링크 추가 모달 */}
+      {isAdding && (
+        <div className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 rounded-2xl animate-in fade-in duration-200">
+          <div className="bg-white p-4 rounded-xl w-full shadow-2xl text-slate-800">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-sm font-bold text-indigo-600">새 바로가기 추가</span>
+              <button onClick={() => setIsAdding(false)} className="text-slate-400 hover:text-slate-600"><X size={16}/></button>
+            </div>
+            <div className="space-y-2 mb-3">
+              <input 
+                type="text" 
+                placeholder="이름 (예: 구글)" 
+                value={newLink.name}
+                onChange={e => setNewLink({...newLink, name: e.target.value})}
+                className="w-full p-2 text-sm border rounded outline-none focus:border-indigo-500 bg-slate-50"
+                autoFocus
+              />
+              <input 
+                type="text" 
+                placeholder="주소 (예: google.com)" 
+                value={newLink.url}
+                onChange={e => setNewLink({...newLink, url: e.target.value})}
+                className="w-full p-2 text-sm border rounded outline-none focus:border-indigo-500 bg-slate-50"
+              />
+            </div>
+            <button onClick={addLink} className="w-full py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 font-bold shadow-md">
               등록하기
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
     </div>
   );
 };
