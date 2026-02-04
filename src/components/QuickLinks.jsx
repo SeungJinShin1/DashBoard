@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+
 const QuickLinks = () => {
     const [portalUrl, setPortalUrl] = useState("");
     const [isEditing, setIsEditing] = useState(false);

@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 const WeatherBadge = ({ weatherApiKey }) => {
     const [weather, setWeather] = useState(null);
     const [loading, setLoading] = useState(true);

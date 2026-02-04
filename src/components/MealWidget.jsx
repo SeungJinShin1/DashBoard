@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+
 const MealWidget = ({ schoolInfo, neisKey }) => {
     const [meal, setMeal] = useState("로딩 중...");
   

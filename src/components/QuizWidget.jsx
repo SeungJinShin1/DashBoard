@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 const QuizWidget = ({ geminiKey }) => {
     const [topic, setTopic] = useState("");
     const [quiz, setQuiz] = useState("");

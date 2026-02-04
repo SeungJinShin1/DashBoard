@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 const AIBriefing = ({ schoolInfo, routine, geminiKey, neisKey }) => {
     const [briefing, setBriefing] = useState("");
     const [loading, setLoading] = useState(false);

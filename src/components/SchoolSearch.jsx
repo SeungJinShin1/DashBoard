@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 const SchoolSearch = ({ setSchoolInfo, neisKey }) => {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState([]);
