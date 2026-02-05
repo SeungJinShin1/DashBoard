@@ -40,21 +40,25 @@ const fetchWeatherData = async (lat, lon, apiKey) => {
     
     let locationName = "위치 확인 중";
     if (geoData && geoData.length > 0) {
-      // 한국어 이름 우선 사용
-      let city = geoData[0].local_names?.ko || geoData[0].name;
+      // 한국어 이름이 있으면 가져옴
+      const rawName = geoData[0].local_names?.ko || geoData[0].name;
       
-      // "~동"이나 상세 주소가 나오면 떼어내고 시/군 단위만 남기려는 시도
-      // (API가 동 단위를 줄 때가 있어 완벽하진 않지만, 최대한 깔끔하게)
-      if (city.includes("-si")) city = city.replace("-si", "시");
-      if (city.includes("-gun")) city = city.replace("-gun", "군");
-      if (city.includes("-gu")) city = city.replace("-gu", "구");
+      // [위치명 정제 로직] 
+      // "천안시청 식당동" -> "천안시", "예산군청" -> "예산군" 처럼 '시'나 '군'을 찾아 추출
+      // 정규식: 한글로 시작해서 '시' 또는 '군'으로 끝나는 덩어리를 찾음
+      const match = rawName.match(/([가-힣]+(시|군))/);
       
-      locationName = city; 
+      if (match) {
+        locationName = match[0]; // "천안시" or "예산군"
+      } else {
+        // 매칭 안되면 공백 기준 첫 단어만 사용 (예: "서울", "제주")
+        locationName = rawName.split(' ')[0];
+      }
     }
 
     return {
       temp: Math.round(weatherData.main.temp),
-      desc: getSimpleWeatherName(weatherData.weather[0].id), // 수정된 함수 사용
+      desc: getSimpleWeatherName(weatherData.weather[0].id), // 알기 쉬운 날씨 용어로 변환
       icon: weatherData.weather[0].icon,
       pm10: components.pm10 || 0,
       pm2_5: components.pm2_5 || 0,
@@ -91,9 +95,8 @@ const WeatherBadge = ({ weatherApiKey }) => {
   if (!weather) return null;
 
   // 한국 환경부 기준 미세먼지 등급 (PM10 / PM2.5)
-  // 좋음(파랑), 보통(초록), 나쁨(주황), 매우나쁨(빨강)
   const getDustStatus = (val, type) => {
-    let color = "text-blue-600 bg-blue-50"; // 기본: 좋음
+    let color = "text-blue-600 bg-blue-50"; // 좋음
     
     if (type === 'pm10') {
       if (val <= 30) color = "text-blue-600 bg-blue-50";
@@ -113,32 +116,35 @@ const WeatherBadge = ({ weatherApiKey }) => {
   const pm25Color = getDustStatus(weather.pm2_5, 'pm25');
 
   return (
-    <div className="flex items-center gap-4 bg-white px-5 py-3 rounded-2xl border border-slate-200 shadow-sm">
-      {/* 1. 날씨 아이콘 & 온도 */}
+    <div className="flex items-center gap-4 bg-white px-5 py-3 rounded-2xl border border-slate-200 shadow-sm min-w-fit">
+      {/* 1. 날씨 아이콘 & 온도 & 설명 */}
       <div className="flex items-center gap-3">
         <img 
           src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} 
           alt="weather" 
           className="w-14 h-14 -my-3" 
         />
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center items-start">
           <span className="text-2xl font-bold text-slate-800 leading-none">{weather.temp}°</span>
-          <span className="text-sm font-medium text-slate-500 mt-1">{weather.desc}</span>
+          {/* 줄바꿈 방지: whitespace-nowrap */}
+          <span className="text-sm font-medium text-slate-500 mt-1 whitespace-nowrap">{weather.desc}</span>
         </div>
       </div>
 
       <div className="w-px h-8 bg-slate-200 mx-1"></div>
 
-      {/* 2. 미세먼지 정보 */}
+      {/* 2. 미세먼지 정보 (줄바꿈 방지 & 정확한 용어) */}
       <div className="flex flex-col gap-1.5 justify-center">
-        <div className="flex items-center gap-2 text-xs font-medium">
-          <span className={`px-2 py-0.5 rounded ${pm10Color} min-w-[3.5rem] text-center font-bold`}>
-            미세 {Math.round(weather.pm10)}
+        <div className="flex items-center gap-2 text-xs font-medium whitespace-nowrap">
+          <span className="text-slate-400 w-16 text-right">미세먼지</span>
+          <span className={`px-2 py-0.5 rounded ${pm10Color} min-w-[3rem] text-center font-bold`}>
+            {Math.round(weather.pm10)}
           </span>
         </div>
-        <div className="flex items-center gap-2 text-xs font-medium">
-          <span className={`px-2 py-0.5 rounded ${pm25Color} min-w-[3.5rem] text-center font-bold`}>
-            초미세 {Math.round(weather.pm2_5)}
+        <div className="flex items-center gap-2 text-xs font-medium whitespace-nowrap">
+          <span className="text-slate-400 w-16 text-right">초미세먼지</span>
+          <span className={`px-2 py-0.5 rounded ${pm25Color} min-w-[3rem] text-center font-bold`}>
+            {Math.round(weather.pm2_5)}
           </span>
         </div>
       </div>
@@ -146,7 +152,7 @@ const WeatherBadge = ({ weatherApiKey }) => {
       <div className="w-px h-8 bg-slate-200 mx-1"></div>
 
       {/* 3. 위치 정보 */}
-      <div className="flex items-center gap-1 text-slate-500 text-sm font-semibold">
+      <div className="flex items-center gap-1 text-slate-500 text-sm font-semibold whitespace-nowrap">
         <MapPin size={16} className="text-orange-500"/>
         <span>{weather.location}</span>
       </div>
