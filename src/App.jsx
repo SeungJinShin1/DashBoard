@@ -26,7 +26,7 @@ const App = () => {
     }
   };
 
-  const GEMINI_API_KEY = getEnv("VITE_GEMINI_API_KEY");
+  const GEMINI_API_KEY = getEnv("GEMINI_API_KEY");
   const NEIS_API_KEY = getEnv("VITE_NEIS_API_KEY");
   const WEATHER_API_KEY = getEnv("VITE_WEATHER_API_KEY");
 
