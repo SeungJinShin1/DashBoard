@@ -94,14 +94,13 @@ const App = () => {
           <AIBriefing 
             schoolInfo={schoolInfo} 
             routine={routine} 
-            geminiKey={GEMINI_API_KEY} 
             neisKey={NEIS_API_KEY}
           />
           
           {/* 6열: 하단 3개 위젯 나란히 배치 */}
           <div className="h-auto min-h-[300px] flex flex-col gap-6 lg:col-span-1 md:col-span-2 lg:h-80">
             <div className="flex-1 h-full">
-               <QuizWidget geminiKey={GEMINI_API_KEY} />
+               <QuizWidget />
             </div>
           </div>
 
@@ -110,7 +109,7 @@ const App = () => {
           </div>
 
           <div className="h-80 lg:col-span-1 md:col-span-2">
-             <QuoteWidget geminiKey={GEMINI_API_KEY} />
+             <QuoteWidget />
           </div>
 
         </div>

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Quote, RefreshCw } from 'lucide-react';
+import { generateQuote } from '../services/gemini';
 
-const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
-const GEMINI_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-
-const QuoteWidget = ({ geminiKey }) => {
+const QuoteWidget = () => { // geminiKey prop 제거
   const [quote, setQuote] = useState({ 
     text: "오늘의 명언을 불러오는 중입니다...", 
     author: "AI 명언봇" 
@@ -12,27 +10,9 @@ const QuoteWidget = ({ geminiKey }) => {
   const [loading, setLoading] = useState(false);
 
   const fetchQuote = async () => {
-    if (!geminiKey) {
-      setQuote({ text: "API 키가 설정되지 않았습니다.", author: "시스템 알림" });
-      return;
-    }
-
     setLoading(true);
     try {
-      const response = await fetch(`${GEMINI_BASE_URL}?key=${geminiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: "초등학생들에게 꿈과 희망, 교훈을 줄 수 있는 짧은 명언이나 사자성어 1개를 추천해줘. 답변은 잡담 없이 오직 JSON 형식으로만 해줘: {\"text\": \"명언 내용\", \"author\": \"인물 또는 출처\"}"
-            }]
-          }]
-        }),
-      });
-
-      const data = await response.json();
-      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      const rawText = await generateQuote();
       
       // JSON 파싱 시도 (마크다운 코드블럭 제거)
       const jsonText = rawText.replace(/```json|```/g, "").trim();
@@ -55,7 +35,7 @@ const QuoteWidget = ({ geminiKey }) => {
 
   useEffect(() => {
     fetchQuote();
-  }, [geminiKey]);
+  }, []); // 의존성 배열 수정
 
   return (
     <div className="bg-gradient-to-br from-teal-400 to-emerald-600 p-6 rounded-2xl shadow-lg text-white h-full flex flex-col justify-between relative overflow-hidden group">

@@ -53,3 +53,8 @@ export const generateQuiz = async (topic) => {
   `;
   return callGeminiApi(prompt);
 };
+
+export const generateQuote = async () => {
+  const prompt = `초등학생들에게 꿈과 희망, 교훈을 줄 수 있는 짧은 명언이나 사자성어 1개를 추천해줘. 답변은 잡담 없이 오직 JSON 형식으로만 해줘: {"text": "명언 내용", "author": "인물 또는 출처"}`;
+  return callGeminiApi(prompt);
+};
