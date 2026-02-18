@@ -8,7 +8,7 @@ const getTodayString = () => {
   return `${year}${month}${day}`;
 };
 
-const searchSchool = async (schoolName, apiKey) => {
+export const searchSchool = async (schoolName, apiKey) => {
   if (!schoolName) return [];
   const keyParam = apiKey ? `&KEY=${apiKey}` : '';
   
@@ -27,7 +27,7 @@ const searchSchool = async (schoolName, apiKey) => {
   }
 };
 
-const getMealInfo = async (officeCode, schoolCode, apiKey) => {
+export const getMealInfo = async (officeCode, schoolCode, apiKey) => {
   const dateStr = getTodayString();
   const keyParam = apiKey ? `&KEY=${apiKey}` : '';
 
