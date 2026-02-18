@@ -1,6 +1,7 @@
 const callGeminiApi = async (prompt) => {
   try {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+    // Vercel 배포 환경에서는 같은 도메인의 /api/gemini를 사용합니다.
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || '';
     const response = await fetch(`${backendUrl}/api/gemini`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
