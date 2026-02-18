@@ -20,7 +20,7 @@ const callGeminiApi = async (prompt) => {
   }
 };
 
-const generateMorningSpeech = async (meal, routine) => {
+export const generateMorningSpeech = async (meal, routine) => {
   const prompt = `
     당신은 쾌활하고 다정한 초등학교 선생님입니다.
     오늘의 급식 메뉴는 [${meal}]이고, 아침 활동 루틴은 [${routine}]입니다.
@@ -35,7 +35,7 @@ const generateMorningSpeech = async (meal, routine) => {
   return callGeminiApi(prompt);
 };
 
-const generateQuiz = async (topic) => {
+export const generateQuiz = async (topic) => {
   const prompt = `
     초등학생을 위한 [${topic}] 관련 퀴즈 3문제를 만들어주세요.
     
