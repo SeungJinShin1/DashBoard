@@ -1,28 +1,26 @@
-const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
-const GEMINI_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-
-const callGeminiApi = async (prompt, apiKey) => {
-  if (!apiKey) throw new Error("API 키가 설정되지 않았습니다.");
-  
+const callGeminiApi = async (prompt) => {
   try {
-    const response = await fetch(`${GEMINI_BASE_URL}?key=${apiKey}`, {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+    const response = await fetch(`${backendUrl}/api/gemini`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      }),
+      body: JSON.stringify({ prompt }),
     });
 
     const data = await response.json();
+    if (data.error) {
+      console.error("Gemini API Proxy Error:", data.error);
+      return `Proxy Error: ${data.error.message || data.error}`;
+    }
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     return text || "AI 응답을 생성하지 못했습니다.";
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    console.error("Gemini API Call Error:", error);
     return "AI 서버와 통신 중 오류가 발생했습니다.";
   }
 };
 
-const generateMorningSpeech = async (meal, routine, apiKey) => {
+const generateMorningSpeech = async (meal, routine) => {
   const prompt = `
     당신은 쾌활하고 다정한 초등학교 선생님입니다.
     오늘의 급식 메뉴는 [${meal}]이고, 아침 활동 루틴은 [${routine}]입니다.
@@ -34,10 +32,10 @@ const generateMorningSpeech = async (meal, routine, apiKey) => {
     2. 반말(친근하게)과 존댓말(다정하게) 중 하나를 랜덤하게 선택해서 작성하세요.
     3. 이모지를 적절히 사용하여 아이들이 좋아하게 만들어주세요.
   `;
-  return callGeminiApi(prompt, apiKey);
+  return callGeminiApi(prompt);
 };
 
-const generateQuiz = async (topic, apiKey) => {
+const generateQuiz = async (topic) => {
   const prompt = `
     초등학생을 위한 [${topic}] 관련 퀴즈 3문제를 만들어주세요.
     
@@ -52,5 +50,5 @@ const generateQuiz = async (topic, apiKey) => {
     3. 정답은 문제 바로 아래에 표시해주세요.
     4. 한국어로 작성하세요.
   `;
-  return callGeminiApi(prompt, apiKey);
+  return callGeminiApi(prompt);
 };

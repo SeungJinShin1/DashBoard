@@ -1,40 +1,8 @@
 import React, { useState } from 'react';
 import { BrainCircuit } from 'lucide-react';
+import { generateQuiz } from '../services/gemini'; // Correct import
 
-const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
-const GEMINI_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-
-const callGeminiApi = async (prompt, apiKey) => {
-  // API 키가 없는 경우 명확한 에러 메시지
-  if (!apiKey) return "설정된 API 키가 없습니다. .env 파일을 확인해주세요.";
-  
-  try {
-    const response = await fetch(`${GEMINI_BASE_URL}?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-    });
-    const data = await response.json();
-    
-    // API 에러 응답 처리
-    if (data.error) {
-      console.error("Gemini API Error:", data.error);
-      return `오류가 발생했습니다: ${data.error.message}`;
-    }
-    
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "AI 응답을 생성하지 못했습니다.";
-  } catch (error) {
-    console.error("Gemini Network Error:", error);
-    return "네트워크 오류가 발생했습니다.";
-  }
-};
-
-const generateQuiz = async (topic, apiKey) => {
-  const prompt = `초등학생을 위한 [${topic}] 관련 퀴즈 3문제를 만들어주세요. 형식: Q1. 문제... A. 보기... 정답: 정답.`;
-  return callGeminiApi(prompt, apiKey);
-};
-
-const QuizWidget = ({ geminiKey }) => {
+const QuizWidget = () => { // Removed geminiKey prop
   const [topic, setTopic] = useState("");
   const [quiz, setQuiz] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,7 +11,7 @@ const QuizWidget = ({ geminiKey }) => {
     if (!topic) return; 
     setLoading(true); 
     setQuiz(""); // 기존 내용 초기화
-    const res = await generateQuiz(topic, geminiKey); 
+    const res = await generateQuiz(topic); // Call without apiKey argument
     setQuiz(res); 
     setLoading(false); 
   };

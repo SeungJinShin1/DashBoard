@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Sparkles } from 'lucide-react'; // Sparkles 아이콘 필수!
+import { generateMorningSpeech } from '../services/gemini'; // Correct import
+import { getMealInfo } from '../services/neis'; // Assuming getMealInfo is from neis.js
 
-const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
-const GEMINI_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-
-const AIBriefing = ({ schoolInfo, routine, geminiKey, neisKey }) => {
+const AIBriefing = ({ schoolInfo, routine, neisKey }) => { // Removed geminiKey prop
     const [briefing, setBriefing] = useState("");
     const [loading, setLoading] = useState(false);
   
@@ -15,7 +14,7 @@ const AIBriefing = ({ schoolInfo, routine, geminiKey, neisKey }) => {
       setBriefing("");
       
       const meal = await getMealInfo(schoolInfo.office, schoolInfo.code, neisKey);
-      const text = await generateMorningSpeech(meal, routine, geminiKey);
+      const text = await generateMorningSpeech(meal, routine); // Call without geminiKey argument
       
       let i = 0;
       const interval = setInterval(() => {
